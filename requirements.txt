@@ -1,0 +1,9 @@
+streamlit
+xarray
+rioxarray
+numpy
+rasterio
+shapely
+geopandas
+leafmap
+h5netcdf

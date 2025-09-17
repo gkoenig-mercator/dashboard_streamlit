@@ -1,0 +1,7 @@
+[theme]
+# Primary color for highlights, headers, selection, links
+primaryColor="#1F9CA6"  # teal-blue
+backgroundColor="#E8F5F2"  # very light mint
+secondaryBackgroundColor="#DFF2F0"  # slightly darker mint
+textColor="#0F3B2D"  # dark green
+font="sans serif"

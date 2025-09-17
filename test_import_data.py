@@ -8,7 +8,8 @@ from shapely.geometry import shape
 import geopandas as gpd
 import leafmap.foliumap as leafmap
 from backend_functions import load_netcdf, threshold_to_polygons, summarize_mask, show_map, open_netcdf, get_first_dataarray, get_time_steps, select_time_step
-from frontend_functions import time_selector
+from frontend_functions import time_selector, download_button, display_warning_if_empty, render_map
+from utils import gdf_to_geojson
 
 # ----------------------
 # Streamlit app
@@ -40,20 +41,11 @@ if nc_file:
 
     # Show map
     st.subheader("Exceedance Zones")
-    if gdf.empty:
-        st.warning("No exceedance polygons found for this threshold.")
-    else:
-        m = show_map(gdf)
-        m.to_streamlit(height=600)
 
-        # Allow download
-        geojson_str = gdf.to_json()
-        st.download_button(
-            "Download polygons as GeoJSON",
-            geojson_str,
-            file_name="exceedance_polygons.geojson",
-            mime="application/geo+json"
-        )
+    if not display_warning_if_empty(gdf, "No exceedance polygons found for this threshold."):
+        render_map(gdf)
+        geojson_str = gdf_to_geojson(gdf)
+        download_button(geojson_str, "Download polygons as GeoJSON")
 
     # Show stats
     st.subheader("Summary")

@@ -7,7 +7,8 @@ from rasterio.features import shapes
 from shapely.geometry import shape
 import geopandas as gpd
 import leafmap.foliumap as leafmap
-from backend_functions import load_netcdf, threshold_to_polygons, summarize_mask, show_map
+from backend_functions import load_netcdf, threshold_to_polygons, summarize_mask, show_map, open_netcdf, get_first_dataarray, get_time_steps, select_time_step
+from frontend_functions import time_selector
 
 # ----------------------
 # Streamlit app
@@ -19,15 +20,18 @@ nc_file = st.file_uploader("Upload a NetCDF file", type=["nc"])
 threshold = st.number_input("Threshold value", value=10.0)
 
 if nc_file:
-    ds = xr.open_dataset(nc_file)
-    var_name = list(ds.data_vars.keys())[0]
-    da_preview = ds[var_name]
+    # Backend: open file and get DataArray
+    ds = open_netcdf(nc_file)
+    da, var_name = get_first_dataarray(ds)
 
-    # Time selector
-    time_sel = None
-    if "time" in da_preview.dims:
-        times = da_preview["time"].values
-        time_sel = st.selectbox("Select time step", times)
+    # Backend: get available time steps
+    time_steps = get_time_steps(da)
+
+    # UI: select time step
+    time_sel = time_selector(time_steps)
+
+    # Backend: slice by selected time
+    da = select_time_step(da, time_sel)
 
     # Process data
     da = load_netcdf(nc_file, time_sel=time_sel)

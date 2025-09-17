@@ -52,3 +52,27 @@ def show_map(gdf):
     if not gdf.empty:
         m.add_gdf(gdf, layer_name="Above Threshold")
     return m
+
+
+def open_netcdf(nc_file):
+    """Open a NetCDF file and return the xarray Dataset."""
+    ds = xr.open_dataset(nc_file)
+    return ds
+
+def get_first_dataarray(ds):
+    """Return the first variable as a DataArray."""
+    var_name = list(ds.data_vars.keys())[0]
+    da = ds[var_name]
+    return da, var_name
+
+def get_time_steps(da):
+    """Return available time steps if present, else None."""
+    if "time" in da.dims:
+        return da["time"].values
+    return None
+
+def select_time_step(da, time_sel=None):
+    """Return a sliced DataArray for the selected time step."""
+    if "time" in da.dims and time_sel is not None:
+        return da.sel(time=time_sel)
+    return da

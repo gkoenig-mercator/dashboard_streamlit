@@ -12,6 +12,7 @@ import leafmap.foliumap as leafmap
 # ----------------------
 # Functions
 # ----------------------
+@st.cache_resource
 def load_netcdf(nc_file, var_index=0, time_sel=None):
     """Load NetCDF file into an xarray DataArray."""
     ds = xr.open_dataset(nc_file)
@@ -25,7 +26,6 @@ def load_netcdf(nc_file, var_index=0, time_sel=None):
         da = da.rio.write_crs("EPSG:4326")
 
     return da
-
 
 def threshold_to_polygons(da, threshold):
     """Convert values above threshold into polygons (GeoDataFrame)."""
@@ -42,7 +42,6 @@ def threshold_to_polygons(da, threshold):
 
     gdf = gpd.GeoDataFrame(geometry=polygons, crs=da.rio.crs)
     return gdf, mask
-
 
 def summarize_mask(mask):
     """Return simple stats about the threshold exceedance mask."""
